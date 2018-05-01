@@ -95,10 +95,24 @@ class Client(object):
         return True
 
     def move(self, source, dest):
-        pass
+        args = [source, dest]
 
-    def delete(self, paths):
-        pass
+        result, _, stderr = self.__runner.run('move', args)
+        if result != 0:
+            raise RuntimeError(stderr)
+
+        return True
+
+    def delete(self, paths, keep_local=False):
+        args = paths[:]
+        if keep_local:
+            args.append('--keep-local')
+
+        result, _, stderr = self.__runner.run('delete', args)
+        if result != 0:
+            raise RuntimeError(stderr)
+
+        return True
 
     def lock(self, paths, force=False):
         args = paths[:]
