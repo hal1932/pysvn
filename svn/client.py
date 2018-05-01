@@ -68,12 +68,14 @@ class Client(object):
 
         return True
 
-    def update(self, paths=None, revision=None):
+    def update(self, paths=None, revision=None, accept='postpone'):
         args = []
         if paths:
             args.extend(paths)
         if revision:
             args.extend(['--revision', str(revision)])
+        if accept:
+            args.extend(['--accept', accept])
 
         result, _, stderr = self.__runner.run('update', args)
         if result != 0:
@@ -91,6 +93,12 @@ class Client(object):
             raise RuntimeError(stderr)
 
         return True
+
+    def move(self, source, dest):
+        pass
+
+    def delete(self, paths):
+        pass
 
     def lock(self, paths, force=False):
         args = paths[:]
@@ -123,9 +131,17 @@ class Client(object):
 
         result, _, stderr = self.__runner.run('commit', args)
         if result != 0:
-            return RuntimeError(stderr)
+            raise RuntimeError(stderr)
 
         return True
 
-    def resolve(self):
-        pass
+    def resolve(self, path, accept, recursive=False):
+        args = [path, '--accept', accept]
+        if recursive:
+            args.append('--recursive')
+
+        result, _, stderr = self.__runner.run('resolve', args)
+        if result != 0:
+            raise RuntimeError(stderr)
+
+        return True
